@@ -1,0 +1,32 @@
+{
+  "name": "jtd-ts",
+  "version": "0.1.0",
+  "type": "module",
+  "module": "dist/index.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
+  "scripts": {
+    "doc": "typedoc",
+    "fmt": "prettier --write 'src/*.ts'",
+    "lint": "tsc && eslint 'src/*.ts' && typedoc --emit none",
+    "bench": "bun src/bench.ts",
+    "export": "tsc -p tsconfig.build.json && bun build src/index.ts --minify --outfile dist/index.min.js",
+    "prepack": "bun lint && bun test --coverage && bun export"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.1.1",
+    "@types/bun": "^1.1.0",
+    "ajv": "^8.12.0",
+    "eslint": "^9.1.1",
+    "eslint-plugin-spellcheck": "^0.0.20",
+    "jtd": "^0.1.1",
+    "mitata": "^0.1.11",
+    "prettier": "^3.2.5",
+    "typedoc": "^0.25.13",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.1"
+  }
+}
