@@ -37,7 +37,7 @@ describe("native", () => {
     void (any as unknown satisfies typeof any);
     expect(valid.guard(valid.fuzz()));
     expect(valid.guard(undefined)).toBeFalse();
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     expect(valid.schema() satisfies {}).toEqual({});
 
     const vnull = nullable(valid);
@@ -70,7 +70,7 @@ describe("native", () => {
     void (null as boolean | null satisfies typeof nul);
     expect(vnull.guard(vnull.fuzz()));
     expect(
-      vnull.schema() satisfies { type: "boolean"; nullable: true },
+      vnull.schema() satisfies { type: "boolean"; nullable: true }
     ).toEqual({ type: "boolean", nullable: true });
   });
 
@@ -93,7 +93,7 @@ describe("native", () => {
     void (null as number | null satisfies typeof nul);
     expect(vnull.guard(vnull.fuzz()));
     expect(
-      vnull.schema() satisfies { type: "float64"; nullable: true },
+      vnull.schema() satisfies { type: "float64"; nullable: true }
     ).toEqual({ type: "float64", nullable: true });
   });
 
@@ -149,7 +149,7 @@ describe("native", () => {
       {
         type: "uint16",
         nullable: true,
-      },
+      }
     );
   });
 
@@ -175,7 +175,7 @@ describe("native", () => {
       {
         type: "string",
         nullable: true,
-      },
+      }
     );
   });
 
@@ -199,7 +199,7 @@ describe("native", () => {
     void (null as string | null satisfies typeof nul);
     expect(vnull.guard(vnull.fuzz()));
     expect(
-      vnull.schema() satisfies { type: "timestamp"; nullable: true },
+      vnull.schema() satisfies { type: "timestamp"; nullable: true }
     ).toEqual({
       type: "timestamp",
       nullable: true,
@@ -226,7 +226,7 @@ describe("native", () => {
     void (null as "a" | "b" | "c" | null satisfies typeof nul);
     expect(vnull.guard(vnull.fuzz()));
     expect(
-      vnull.schema() satisfies { enum: ["a", "b", "c"]; nullable: true },
+      vnull.schema() satisfies { enum: ["a", "b", "c"]; nullable: true }
     ).toEqual({
       enum: ["a", "b", "c"],
       nullable: true,
@@ -257,7 +257,7 @@ describe("native", () => {
       vnull.schema() satisfies {
         elements: { type: "boolean" };
         nullable: true;
-      },
+      }
     ).toEqual({
       elements: { type: "boolean" },
       nullable: true,
@@ -274,7 +274,7 @@ describe("native", () => {
     expect(valid.guard(null)).toBeFalse();
     expect(valid.guard({ bool: true, extra: 5 })).toBeFalse();
     expect(
-      valid.schema() satisfies { properties: { bool: { type: "boolean" } } },
+      valid.schema() satisfies { properties: { bool: { type: "boolean" } } }
     ).toEqual({
       properties: { bool: { type: "boolean" } },
     });
@@ -295,7 +295,7 @@ describe("native", () => {
       avalid.schema() satisfies {
         properties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      },
+      }
     ).toEqual({
       properties: { bool: { type: "boolean" } },
       additionalProperties: true,
@@ -311,7 +311,7 @@ describe("native", () => {
       vnull.schema() satisfies {
         properties: { bool: { type: "boolean" } };
         nullable: true;
-      },
+      }
     ).toEqual({
       properties: { bool: { type: "boolean" } },
       nullable: true,
@@ -330,7 +330,7 @@ describe("native", () => {
     expect(
       valid.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
-      },
+      }
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
     });
@@ -349,7 +349,7 @@ describe("native", () => {
       avalid.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      },
+      }
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
       additionalProperties: true,
@@ -365,7 +365,7 @@ describe("native", () => {
       vnull.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
         nullable: true;
-      },
+      }
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
       nullable: true,
@@ -386,7 +386,7 @@ describe("native", () => {
       valid.schema() satisfies {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
-      },
+      }
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -409,7 +409,7 @@ describe("native", () => {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      },
+      }
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -428,7 +428,7 @@ describe("native", () => {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
         nullable: true;
-      },
+      }
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -449,7 +449,7 @@ describe("native", () => {
     expect(
       valid.schema() satisfies {
         values: { type: "boolean" };
-      },
+      }
     ).toEqual({
       values: { type: "boolean" },
     });
@@ -464,7 +464,7 @@ describe("native", () => {
       vnull.schema() satisfies {
         values: { type: "boolean" };
         nullable: true;
-      },
+      }
     ).toEqual({
       values: { type: "boolean" },
       nullable: true,
@@ -504,7 +504,7 @@ describe("native", () => {
             additionalProperties: true;
           };
           bool: {
-            // eslint-disable-next-line @typescript-eslint/ban-types
+            // eslint-disable-next-line @typescript-eslint/no-empty-object-type
             properties: {};
             optionalProperties: { value: { type: "boolean" } };
           };
@@ -513,7 +513,7 @@ describe("native", () => {
             optionalProperties: { bool: { type: "boolean" } };
           };
         };
-      },
+      }
     ).toEqual({
       discriminator: "type",
       mapping: {
@@ -555,7 +555,7 @@ describe("native", () => {
             additionalProperties: true;
           };
           bool: {
-            // eslint-disable-next-line @typescript-eslint/ban-types
+            // eslint-disable-next-line @typescript-eslint/no-empty-object-type
             properties: {};
             optionalProperties: { value: { type: "boolean" } };
           };
@@ -565,7 +565,7 @@ describe("native", () => {
           };
         };
         nullable: true;
-      },
+      }
     ).toEqual({
       discriminator: "type",
       mapping: {
@@ -600,7 +600,7 @@ describe("native", () => {
       valid.schema() satisfies {
         definitions: { num: { type: "int8" } };
         ref: "num";
-      },
+      }
     ).toEqual({
       definitions: { num: { type: "int8" } },
       ref: "num",
@@ -617,7 +617,7 @@ describe("native", () => {
         definitions: { num: { type: "int8" } };
         ref: "num";
         nullable: true;
-      },
+      }
     ).toEqual({
       definitions: { num: { type: "int8" } },
       ref: "num",
@@ -636,7 +636,7 @@ describe("native", () => {
       inull.schema() satisfies {
         definitions: { num: { type: "int8"; nullable: true } };
         ref: "num";
-      },
+      }
     ).toEqual({
       definitions: { num: { type: "int8", nullable: true } },
       ref: "num",
@@ -663,10 +663,10 @@ describe("native", () => {
           int: properties({ value: int8() }, {}, true),
           opt: properties(
             {},
-            { value: boolean(), elems: elements(timestamp()) },
+            { value: boolean(), elems: elements(timestamp()) }
           ),
           props: properties({ values: values(int8()) }, { bool: double }),
-        }),
+        })
       );
 
     const val: unknown = { select: "props", values: { key: 0 } };
@@ -1189,7 +1189,7 @@ describe("compile", () => {
 });
 
 const validTestStr = await Bun.file(
-  new URL("../json-typedef-spec/tests/validation.json", import.meta.url),
+  new URL("../json-typedef-spec/tests/validation.json", import.meta.url)
 ).text();
 describe("jtd validation tests", () => {
   const validTests = JSON.parse(validTestStr) as unknown;
@@ -1198,11 +1198,11 @@ describe("jtd validation tests", () => {
       schema: empty(),
       instance: empty(),
       errors: elements(empty()),
-    }),
+    })
   );
   assert(validator.guard(validTests));
   for (const [name, { schema, instance, errors }] of Object.entries(
-    validTests,
+    validTests
   )) {
     test(name, () => {
       // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error,@typescript-eslint/ban-ts-comment
@@ -1214,7 +1214,7 @@ describe("jtd validation tests", () => {
 });
 
 const invalidTestStr = await Bun.file(
-  new URL("../json-typedef-spec/tests/invalid_schemas.json", import.meta.url),
+  new URL("../json-typedef-spec/tests/invalid_schemas.json", import.meta.url)
 ).text();
 describe("jtd invalid schema tests", () => {
   const invalidTests = JSON.parse(invalidTestStr) as unknown;

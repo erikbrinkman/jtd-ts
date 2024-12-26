@@ -3,10 +3,10 @@ const timestampRegex =
 
 /** true if string is a timestamp */
 export function isTimestamp(inp: string): boolean {
-  const matches = inp.match(timestampRegex);
+  const matches = timestampRegex.exec(inp);
   if (!matches) return false;
   const [, year, month, day, hour, minute, second] = matches.map((match) =>
-    parseInt(match),
+    parseInt(match)
   );
   return (
     0 < month &&

@@ -192,7 +192,7 @@ class CompiledNullable<T, S>
  * const schema = nullable(boolean());
  */
 export function nullable<const T, const S>(
-  val: CompiledSchema<T, S>,
+  val: CompiledSchema<T, S>
 ): CompiledSchema<
   T | null,
   {
@@ -252,7 +252,7 @@ class CompiledMetadata<T, S, M>
  */
 export function metadata<const T, const S, const M>(
   val: CompiledSchema<T, S>,
-  metadata: M,
+  metadata: M
 ): CompiledSchema<
   T,
   {
@@ -262,7 +262,7 @@ export function metadata<const T, const S, const M>(
   return new CompiledMetadata(val, metadata);
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 class CompiledEmpty implements CompiledSchema<unknown, {}> {
   guard(obj: unknown): obj is unknown {
     return obj !== undefined;
@@ -282,19 +282,19 @@ class CompiledEmpty implements CompiledSchema<unknown, {}> {
         Object.fromEntries(
           Array<null>(poisson())
             .fill(null)
-            .map(() => [chars(poisson(3)), this.fuzz()]),
+            .map(() => [chars(poisson(3)), this.fuzz()])
         ),
     ])();
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   schema(): {} {
     return {};
   }
 }
 
 /** a schema that accepts everything but undefined */
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function empty(): CompiledSchema<unknown, {}> {
   return new CompiledEmpty();
 }
@@ -600,7 +600,7 @@ class CompiledElements<E, S> implements CompiledSchema<E[], { elements: S }> {
  * schema.guard([true]);
  */
 export function elements<const E, const S>(
-  element: CompiledSchema<E, S>,
+  element: CompiledSchema<E, S>
 ): CompiledSchema<
   E[],
   {
@@ -634,7 +634,7 @@ class CompiledValues<V, S>
     return Object.fromEntries(
       Array<null>(poisson())
         .fill(null)
-        .map(() => [chars(poisson(3)), this.#values.fuzz()]),
+        .map(() => [chars(poisson(3)), this.#values.fuzz()])
     );
   }
 
@@ -653,7 +653,7 @@ class CompiledValues<V, S>
  * schema.guard({"a": false});
  */
 export function values<const V, const S>(
-  value: CompiledSchema<V, S>,
+  value: CompiledSchema<V, S>
 ): CompiledSchema<
   Record<string, V>,
   {
@@ -709,7 +709,7 @@ class CompiledProperties<
     props: Entries | undefined,
     oprops: Entries | undefined,
     additional: boolean,
-    keys: Set<string>,
+    keys: Set<string>
   ) {
     this.#props = props;
     this.#oprops = oprops;
@@ -727,7 +727,7 @@ class CompiledProperties<
       isRecord(obj) &&
       (this.#props?.every(([key, comp]) => comp.guard(obj[key])) ?? true) &&
       (this.#oprops?.every(
-        ([key, comp]) => obj[key] === undefined || comp.guard(obj[key]),
+        ([key, comp]) => obj[key] === undefined || comp.guard(obj[key])
       ) ??
         true) &&
       (this.#additional || Object.keys(obj).every((k) => this.keys.has(k)))
@@ -742,11 +742,11 @@ class CompiledProperties<
   } {
     const req = map(
       this.#props ?? [],
-      ([key, comp]) => [key, comp.fuzz()] as const,
+      ([key, comp]) => [key, comp.fuzz()] as const
     );
     const opt = map(
       filter(this.#oprops ?? [], () => bernoulli()),
-      ([key, comp]) => [key, comp.fuzz()] as const,
+      ([key, comp]) => [key, comp.fuzz()] as const
     );
     const extra = this.#additional
       ? map(
@@ -762,7 +762,7 @@ class CompiledProperties<
                 () => [],
                 () => ({}),
               ])(),
-            ] as const,
+            ] as const
         )
       : [];
     return Object.fromEntries(concat(req, opt, extra)) as {
@@ -801,7 +801,7 @@ class CompiledProperties<
     } = {};
     if (this.#props) {
       schema.properties = Object.fromEntries(
-        this.#props.map(([key, comp]) => [key, comp.schema()]),
+        this.#props.map(([key, comp]) => [key, comp.schema()])
       ) as {
         -readonly [K in keyof P]: P[K] extends CompiledSchema<unknown, infer S>
           ? S
@@ -810,7 +810,7 @@ class CompiledProperties<
     }
     if (this.#oprops) {
       schema.optionalProperties = Object.fromEntries(
-        this.#oprops.map(([key, comp]) => [key, comp.schema()]),
+        this.#oprops.map(([key, comp]) => [key, comp.schema()])
       ) as {
         -readonly [K in keyof O]: O[K] extends CompiledSchema<unknown, infer S>
           ? S
@@ -831,7 +831,7 @@ function propertiesEntries<
 >(
   props?: Entries,
   oprops?: Entries,
-  additionalProperties?: boolean,
+  additionalProperties?: boolean
 ): CompiledSchema<
   {
     -readonly [K in keyof (Required<P> & Partial<O>)]: (P &
@@ -857,7 +857,7 @@ function propertiesEntries<
   }
 > {
   const keys = new Set<string>(
-    map(concat(props ?? [], oprops ?? []), ([key]) => key),
+    map(concat(props ?? [], oprops ?? []), ([key]) => key)
   );
   if (props?.some(([, p]) => p.definitions)) {
     throw new Error("definitions can only exist on a root schema");
@@ -870,7 +870,7 @@ function propertiesEntries<
       props,
       oprops,
       additionalProperties ?? false,
-      keys,
+      keys
     );
   }
 }
@@ -891,7 +891,7 @@ export function properties<
 >(
   props: P,
   oprops: O,
-  additional: true,
+  additional: true
 ): CompiledSchema<
   {
     -readonly [K in keyof (Required<P> &
@@ -931,7 +931,7 @@ export function properties<
 >(
   props: P,
   oprops: undefined,
-  additional: true,
+  additional: true
 ): CompiledSchema<
   {
     -readonly [K in keyof (Required<P> &
@@ -961,7 +961,7 @@ export function properties<
 >(
   props: undefined,
   oprops: O,
-  additional: true,
+  additional: true
 ): CompiledSchema<
   {
     -readonly [K in keyof (Partial<O> &
@@ -992,7 +992,7 @@ export function properties<
 >(
   props: P,
   oprops: O,
-  additional?: false,
+  additional?: false
 ): CompiledSchema<
   {
     -readonly [K in keyof (Required<P> & Partial<O>)]: (P &
@@ -1026,7 +1026,7 @@ export function properties<
 >(
   props: P,
   oprops?: undefined,
-  additional?: false,
+  additional?: false
 ): CompiledSchema<
   {
     -readonly [K in keyof Required<P>]: P[K] extends CompiledSchema<
@@ -1056,7 +1056,7 @@ export function properties<
 >(
   props: undefined,
   oprops: O,
-  additional?: false,
+  additional?: false
 ): CompiledSchema<
   {
     -readonly [K in keyof Partial<O>]: O[K] extends CompiledSchema<
@@ -1081,7 +1081,7 @@ export function properties<
 >(
   props?: P,
   oprops?: O,
-  additionalProperties?: boolean,
+  additionalProperties?: boolean
 ): CompiledSchema<
   {
     -readonly [K in keyof (Required<P> & Partial<O>)]: (P &
@@ -1109,7 +1109,7 @@ export function properties<
   return propertiesEntries(
     props ? Object.entries(props) : undefined,
     oprops ? Object.entries(oprops) : undefined,
-    additionalProperties,
+    additionalProperties
   );
 }
 
@@ -1143,7 +1143,7 @@ class CompiledDiscriminator<
   constructor(
     discriminator: D,
     mapping: M,
-    entries: Entries<Record<string, unknown>>,
+    entries: Entries<Record<string, unknown>>
   ) {
     this.#discriminator = discriminator;
     this.#mapping = mapping;
@@ -1187,7 +1187,7 @@ class CompiledDiscriminator<
     };
   } {
     const mapping = Object.fromEntries(
-      this.#entries.map(([key, val]) => [key, val.schema()]),
+      this.#entries.map(([key, val]) => [key, val.schema()])
     ) as {
       -readonly [K in keyof M]: M[K] extends CompiledSchema<unknown, infer S>
         ? S
@@ -1209,7 +1209,7 @@ function discriminatorEntries<
 >(
   discriminator: D,
   mapping: M,
-  entries: Entries<Record<string, unknown>>,
+  entries: Entries<Record<string, unknown>>
 ): CompiledSchema<
   {
     [K in keyof M]: M[K] extends CompiledSchema<infer P, unknown>
@@ -1233,7 +1233,7 @@ function discriminatorEntries<
     entries.some(([, comp]) => comp.keys?.has(discriminator) ?? true)
   ) {
     throw new Error(
-      "all discriminator mappings must be properties schemas that don't contain discriminator",
+      "all discriminator mappings must be properties schemas that don't contain discriminator"
     );
   } else {
     return new CompiledDiscriminator(discriminator, mapping, entries);
@@ -1259,7 +1259,7 @@ export function discriminator<
   >,
 >(
   discriminator: D,
-  mapping: M,
+  mapping: M
 ): CompiledSchema<
   {
     [K in keyof M]: M[K] extends CompiledSchema<infer P, unknown>
@@ -1302,7 +1302,7 @@ export interface Definitions<
   /** add a definition */
   def<const R extends string, const T, const S>(
     name: R,
-    val: (b: Refs<D>) => CompiledSchema<T, S>,
+    val: (b: Refs<D>) => CompiledSchema<T, S>
   ): Definitions<{
     [K in keyof (D & Record<R, CompiledSchema<T, S>>)]: (D &
       Record<R, CompiledSchema<T, S>>)[K];
@@ -1310,7 +1310,7 @@ export interface Definitions<
 
   /** build  the definitions into a compiled schema */
   build<const T, const S>(
-    val: (defs: Refs<D>) => CompiledSchema<T, S>,
+    val: (defs: Refs<D>) => CompiledSchema<T, S>
   ): CompiledSchema<
     T,
     {
@@ -1400,7 +1400,7 @@ class CompiledDefinitions<
       >)[K];
   } {
     const definitions = Object.fromEntries(
-      Object.entries(this.#defs).map(([key, comp]) => [key, comp.schema()]),
+      Object.entries(this.#defs).map(([key, comp]) => [key, comp.schema()])
     ) as {
       [R in keyof D]: D[R] extends CompiledSchema<unknown, infer S> ? S : never;
     };
@@ -1449,7 +1449,7 @@ class DefinitionsBuilder<
 
   def<const R extends string, const T, const S>(
     name: R,
-    val: (b: Refs<D>) => CompiledSchema<T, S>,
+    val: (b: Refs<D>) => CompiledSchema<T, S>
   ): Definitions<{
     [K in keyof (D & Record<R, CompiledSchema<T, S>>)]: (D &
       Record<R, CompiledSchema<T, S>>)[K];
@@ -1463,12 +1463,12 @@ class DefinitionsBuilder<
       {
         ...this.#refs,
         [name]: new CompiledRef(name, comp),
-      } as Refs<D & Record<R, CompiledSchema<T, S>>>,
+      } as Refs<D & Record<R, CompiledSchema<T, S>>>
     );
   }
 
   build<const T, const S>(
-    val: (defs: Refs<D>) => CompiledSchema<T, S>,
+    val: (defs: Refs<D>) => CompiledSchema<T, S>
   ): CompiledSchema<
     T,
     {
@@ -1516,7 +1516,7 @@ class DefinitionsBuilder<
  * schema.guard({ a: true, b: [false] });
  * schema.guard({ a: false });
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function definitions(): Definitions<{}> {
   return new DefinitionsBuilder({}, {});
 }
@@ -1765,10 +1765,8 @@ export type SchemaData<
                         S extends DiscriminatorSchema<infer D, infer M>
                         ?
                             | {
-                                [K in keyof M]: { [DK in D]: K } & SchemaData<
-                                  M[K],
-                                  R
-                                >;
+                                [K in keyof M]: Record<D, K> &
+                                  SchemaData<M[K], R>;
                               }[keyof M]
                             // I'm not sure where an any is coming from, but it's not ideal
                             // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -1797,7 +1795,7 @@ class LazyCompiledRef implements CompiledSchema<unknown, { ref: string }> {
 
   constructor(
     valids: Readonly<Record<string, CompiledSchema<unknown, unknown>>>,
-    ref: string,
+    ref: string
   ) {
     this.#valids = valids;
     this.#ref = ref;
@@ -1856,11 +1854,11 @@ class Compiler<R extends Readonly<Record<string, SomeSchema>>> {
         rawValues.some((val) => typeof val !== "string")
       ) {
         throw new Error(
-          "enum schema enum was not a non-empty array of strings",
+          "enum schema enum was not a non-empty array of strings"
         );
       } else {
         valid = enumeration(
-          ...(rawValues as unknown as readonly [string, ...string[]]),
+          ...(rawValues as unknown as readonly [string, ...string[]])
         );
       }
     } else if ("elements" in schema) {
@@ -1892,10 +1890,10 @@ class Compiler<R extends Readonly<Record<string, SomeSchema>>> {
         throw new Error("additionalProperties must be a boolean");
       }
       const reqs = Object.entries(props).map(
-        ([key, schema]) => [key, this.compile(schema)] as const,
+        ([key, schema]) => [key, this.compile(schema)] as const
       );
       const opts = Object.entries(oprops).map(
-        ([key, schema]) => [key, this.compile(schema)] as const,
+        ([key, schema]) => [key, this.compile(schema)] as const
       );
       valid = additionalProperties
         ? propertiesEntries(reqs, opts, true)
@@ -1937,7 +1935,7 @@ class Compiler<R extends Readonly<Record<string, SomeSchema>>> {
             [key, this.compile(schema)] as [
               string,
               CompiledSchema<Record<string, unknown>, unknown>,
-            ],
+            ]
         );
         valid = discriminatorEntries(disc, Object.fromEntries(ents), ents);
       }
@@ -1975,7 +1973,7 @@ export type RootSchemaData<S extends SomeRootSchema> = SchemaData<
   S,
   S["definitions"] extends Readonly<Record<string, SomeSchema>>
     ? S["definitions"]
-    : // eslint-disable-next-line @typescript-eslint/ban-types
+    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       {}
 >;
 
@@ -2005,7 +2003,7 @@ export type RootSchemaData<S extends SomeRootSchema> = SchemaData<
  * const schema = compile({ properties: { bool: { type: "boolean" } } } satisfies SomeRootSchema);
  */
 export function compile<const S extends SomeRootSchema>(
-  schema: S,
+  schema: S
 ): CompiledSchema<RootSchemaData<S>, S> {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (typeof schema !== "object" || schema === null || Array.isArray(schema))
