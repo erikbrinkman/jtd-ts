@@ -7,7 +7,12 @@ export function uniform(start: number, end: number): number {
 }
 
 export function choice<T>(vals: readonly T[]): T {
-  return vals[uniform(0, vals.length)];
+  const res = vals[uniform(0, vals.length)];
+  if (res === undefined) {
+    throw new Error("choices was empty in random choice");
+  } else {
+    return res;
+  }
 }
 
 let CACHE: number | undefined;

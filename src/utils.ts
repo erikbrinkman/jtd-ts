@@ -6,9 +6,15 @@ export function isTimestamp(inp: string): boolean {
   const matches = timestampRegex.exec(inp);
   if (!matches) return false;
   const [, year, month, day, hour, minute, second] = matches.map((match) =>
-    parseInt(match)
+    parseInt(match),
   );
   return (
+    year !== undefined &&
+    month !== undefined &&
+    day !== undefined &&
+    hour !== undefined &&
+    minute !== undefined &&
+    second !== undefined &&
     0 < month &&
     month <= 12 &&
     day <= maxDay(year, month) &&
@@ -18,12 +24,12 @@ export function isTimestamp(inp: string): boolean {
   );
 }
 
-function maxDay(year: number, month: number) {
+function maxDay(year: number, month: number): number {
   if (month === 2) {
     return isLeapYear(year) ? 29 : 28;
   }
 
-  return MONTH_LENGTHS[month - 1];
+  return MONTH_LENGTHS[month - 1] ?? 0;
 }
 
 function isLeapYear(year: number): boolean {

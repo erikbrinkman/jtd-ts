@@ -35,8 +35,9 @@ describe("native", () => {
     assert(valid.guard(any));
     any satisfies unknown;
     void (any as unknown satisfies typeof any);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(undefined)).toBeFalse();
+    expect(() => valid.guardAssert(undefined)).toThrow(".: value is undefined");
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     expect(valid.schema() satisfies {}).toEqual({});
 
@@ -45,7 +46,7 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies unknown | null;
     void (null as unknown | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(vnull.schema() satisfies { nullable: true }).toEqual({
       nullable: true,
     });
@@ -57,8 +58,9 @@ describe("native", () => {
     assert(valid.guard(bool));
     bool satisfies boolean;
     void (true as boolean satisfies typeof bool);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a boolean");
     expect(valid.schema() satisfies { type: "boolean" }).toEqual({
       type: "boolean",
     });
@@ -68,9 +70,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies boolean | null;
     void (null as boolean | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
+    expect(() => vnull.guardAssert(9)).toThrow(
+      ".: number is not a boolean or number is not null",
+    );
     expect(
-      vnull.schema() satisfies { type: "boolean"; nullable: true }
+      vnull.schema() satisfies { type: "boolean"; nullable: true },
     ).toEqual({ type: "boolean", nullable: true });
   });
 
@@ -80,8 +85,9 @@ describe("native", () => {
     assert(valid.guard(num));
     num satisfies number;
     void (0 as number satisfies typeof num);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not number");
     expect(valid.schema() satisfies { type: "float64" }).toEqual({
       type: "float64",
     });
@@ -91,9 +97,9 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies number | null;
     void (null as number | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
-      vnull.schema() satisfies { type: "float64"; nullable: true }
+      vnull.schema() satisfies { type: "float64"; nullable: true },
     ).toEqual({ type: "float64", nullable: true });
   });
 
@@ -103,11 +109,15 @@ describe("native", () => {
     assert(valid.guard(num));
     num satisfies number;
     void (0 as number satisfies typeof num);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(-129)).toBeFalse();
+    expect(() => valid.guardAssert(-129)).toThrow(".: -129 is less than -128");
     expect(valid.guard(128)).toBeFalse();
+    expect(() => valid.guardAssert(128)).toThrow(".: 128 is greater than 127");
     expect(valid.guard(0.5)).toBeFalse();
+    expect(() => valid.guardAssert(0.5)).toThrow(".: 0.5 is not an integer");
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a number");
     expect(valid.schema() satisfies { type: "int8" }).toEqual({
       type: "int8",
     });
@@ -117,7 +127,7 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies number | null;
     void (null as number | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(vnull.schema() satisfies { type: "int8"; nullable: true }).toEqual({
       type: "int8",
       nullable: true,
@@ -130,9 +140,13 @@ describe("native", () => {
     assert(valid.guard(num));
     num satisfies number;
     void (0 as number satisfies typeof num);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(-1)).toBeFalse();
+    expect(() => valid.guardAssert(-1)).toThrow(".: -1 is less than 0");
     expect(valid.guard(65536)).toBeFalse();
+    expect(() => valid.guardAssert(65536)).toThrow(
+      ".: 65536 is greater than 65535",
+    );
     expect(valid.guard(0.5)).toBeFalse();
     expect(valid.guard(null)).toBeFalse();
     expect(valid.schema() satisfies { type: "uint16" }).toEqual({
@@ -144,12 +158,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies number | null;
     void (null as number | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(vnull.schema() satisfies { type: "uint16"; nullable: true }).toEqual(
       {
         type: "uint16",
         nullable: true,
-      }
+      },
     );
   });
 
@@ -159,8 +173,9 @@ describe("native", () => {
     assert(valid.guard(str));
     str satisfies string;
     void ("" as string satisfies typeof str);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a string");
     expect(valid.schema() satisfies { type: "string" }).toEqual({
       type: "string",
     });
@@ -170,12 +185,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies string | null;
     void (null as string | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(vnull.schema() satisfies { type: "string"; nullable: true }).toEqual(
       {
         type: "string",
         nullable: true,
-      }
+      },
     );
   });
 
@@ -185,8 +200,11 @@ describe("native", () => {
     assert(valid.guard(time));
     time satisfies string;
     void ("" as string satisfies typeof time);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard("foo")).toBeFalse();
+    expect(() => valid.guardAssert("foo")).toThrow(
+      ".: foo is not a valid timestamp",
+    );
     expect(valid.guard(null)).toBeFalse();
     expect(valid.schema() satisfies { type: "timestamp" }).toEqual({
       type: "timestamp",
@@ -197,9 +215,9 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies string | null;
     void (null as string | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
-      vnull.schema() satisfies { type: "timestamp"; nullable: true }
+      vnull.schema() satisfies { type: "timestamp"; nullable: true },
     ).toEqual({
       type: "timestamp",
       nullable: true,
@@ -212,9 +230,11 @@ describe("native", () => {
     assert(valid.guard(abc));
     abc satisfies "a" | "b" | "c";
     void ("a" as "a" | "b" | "c" satisfies typeof abc);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard("d")).toBeFalse();
+    expect(() => valid.guardAssert("d")).toThrow(".: d is not one of a, b, c");
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a string");
     expect(valid.schema() satisfies { enum: ["a", "b", "c"] }).toEqual({
       enum: ["a", "b", "c"],
     });
@@ -224,9 +244,9 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies "a" | "b" | "c" | null;
     void (null as "a" | "b" | "c" | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
-      vnull.schema() satisfies { enum: ["a", "b", "c"]; nullable: true }
+      vnull.schema() satisfies { enum: ["a", "b", "c"]; nullable: true },
     ).toEqual({
       enum: ["a", "b", "c"],
       nullable: true,
@@ -240,9 +260,13 @@ describe("native", () => {
     assert(valid.guard(bools));
     bools satisfies boolean[];
     void ([] as boolean[] satisfies typeof bools);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard([5])).toBeFalse();
+    expect(() => valid.guardAssert([5])).toThrow(
+      "[0]: number is not a boolean",
+    );
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not an array");
     expect(valid.schema() satisfies { elements: { type: "boolean" } }).toEqual({
       elements: { type: "boolean" },
     });
@@ -252,12 +276,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies boolean[] | null;
     void (null as boolean[] | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         elements: { type: "boolean" };
         nullable: true;
-      }
+      },
     ).toEqual({
       elements: { type: "boolean" },
       nullable: true,
@@ -270,11 +294,15 @@ describe("native", () => {
     assert(valid.guard(props));
     props satisfies { bool: boolean };
     void (props as { bool: boolean } satisfies typeof props);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a record");
     expect(valid.guard({ bool: true, extra: 5 })).toBeFalse();
+    expect(() => valid.guardAssert({ bool: true, extra: 5 })).toThrow(
+      ".extra: 'extra' is not a valid property",
+    );
     expect(
-      valid.schema() satisfies { properties: { bool: { type: "boolean" } } }
+      valid.schema() satisfies { properties: { bool: { type: "boolean" } } },
     ).toEqual({
       properties: { bool: { type: "boolean" } },
     });
@@ -288,14 +316,17 @@ describe("native", () => {
       [k: string]: unknown;
     } satisfies typeof aprops);
     expect(avalid.guard({ bool: 7, extra: 5 })).toBeFalse();
+    expect(() => avalid.guardAssert({ bool: 7, extra: 5 })).toThrow(
+      ".bool: number is not a boolean",
+    );
     for (let i = 0; i < 20; ++i) {
-      expect(avalid.guard(avalid.fuzz()));
+      expect(avalid.guard(avalid.fuzz())).toBeTrue();
     }
     expect(
       avalid.schema() satisfies {
         properties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      }
+      },
     ).toEqual({
       properties: { bool: { type: "boolean" } },
       additionalProperties: true,
@@ -306,12 +337,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies { bool: boolean } | null;
     void (null as { bool: boolean } | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         properties: { bool: { type: "boolean" } };
         nullable: true;
-      }
+      },
     ).toEqual({
       properties: { bool: { type: "boolean" } },
       nullable: true,
@@ -324,13 +355,14 @@ describe("native", () => {
     assert(valid.guard(props));
     props satisfies { bool?: boolean };
     void (props as { bool?: boolean } satisfies typeof props);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard({})).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
+    expect(() => valid.guardAssert(null)).toThrow(".: null is not a record");
     expect(
       valid.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
-      }
+      },
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
     });
@@ -344,12 +376,15 @@ describe("native", () => {
       [k: string]: unknown;
     } satisfies typeof aprops);
     expect(avalid.guard({ bool: 7, extra: 5 })).toBeFalse();
-    expect(avalid.guard(avalid.fuzz()));
+    expect(() => avalid.guardAssert({ bool: 7, extra: 5 })).toThrow(
+      ".bool: number is not a boolean",
+    );
+    expect(avalid.guard(avalid.fuzz())).toBeTrue();
     expect(
       avalid.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      }
+      },
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
       additionalProperties: true,
@@ -360,12 +395,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies { bool?: boolean } | null;
     void (null as { bool?: boolean } | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         optionalProperties: { bool: { type: "boolean" } };
         nullable: true;
-      }
+      },
     ).toEqual({
       optionalProperties: { bool: { type: "boolean" } },
       nullable: true,
@@ -378,15 +413,18 @@ describe("native", () => {
     assert(valid.guard(props));
     props satisfies { int: number; bool?: boolean };
     void ({ int: 5 } as { int: number; bool?: boolean } satisfies typeof props);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard({ int: 5 })).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
     expect(valid.guard({ int: 10000 })).toBeFalse();
+    expect(() => valid.guardAssert({ int: 10000, bool: 7 })).toThrow(
+      ".int: 10000 is greater than 127\n.bool: number is not a boolean",
+    );
     expect(
       valid.schema() satisfies {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
-      }
+      },
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -403,13 +441,13 @@ describe("native", () => {
     } satisfies typeof aprops);
     expect(avalid.guard({ int: 7, bool: 9, extra: 5 })).toBeFalse();
     expect(avalid.guard({ bool: false })).toBeFalse();
-    expect(avalid.guard(avalid.fuzz()));
+    expect(avalid.guard(avalid.fuzz())).toBeTrue();
     expect(
       avalid.schema() satisfies {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
         additionalProperties: true;
-      }
+      },
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -422,13 +460,13 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies { int: number; bool?: boolean } | null;
     void (null as { int: number; bool?: boolean } | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         properties: { int: { type: "int8" } };
         optionalProperties: { bool: { type: "boolean" } };
         nullable: true;
-      }
+      },
     ).toEqual({
       properties: { int: { type: "int8" } },
       optionalProperties: { bool: { type: "boolean" } },
@@ -442,14 +480,18 @@ describe("native", () => {
     assert(valid.guard(bools));
     bools satisfies Record<string, boolean>;
     void ({} as Record<string, boolean> satisfies typeof bools);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard({})).toBeTrue();
     expect(valid.guard([5])).toBeFalse();
+    expect(() => valid.guardAssert([5])).toThrow(".: array is not a record");
+    expect(() => valid.guardAssert({ a: 5 })).toThrow(
+      ".a: number is not a boolean",
+    );
     expect(valid.guard(null)).toBeFalse();
     expect(
       valid.schema() satisfies {
         values: { type: "boolean" };
-      }
+      },
     ).toEqual({
       values: { type: "boolean" },
     });
@@ -459,12 +501,12 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies Record<string, boolean> | null;
     void (null as Record<string, boolean> | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         values: { type: "boolean" };
         nullable: true;
-      }
+      },
     ).toEqual({
       values: { type: "boolean" },
       nullable: true,
@@ -487,14 +529,29 @@ describe("native", () => {
       | ({ type: "int"; value: number } & Record<string, unknown>)
       | { type: "bool"; value?: boolean }
       | { type: "mixed"; int: number; bool?: boolean } satisfies typeof discs);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard({ type: "int" })).toBeFalse();
+    expect(() => valid.guardAssert({ type: "int" })).toThrow(
+      ".: required key 'value' is missing",
+    );
     expect(valid.guard({ type: "mixed", bool: true, int: 0 })).toBeTrue();
     expect(valid.guard({ type: "mixed", bool: true })).toBeFalse();
     expect(valid.guard({ type: "int", value: 0, extra: 8 })).toBeTrue();
     expect(valid.guard({ type: "bool" })).toBeTrue();
     expect(valid.guard({ type: "bool", value: true })).toBeTrue();
     expect(valid.guard({ type: "bool", extra: 8 })).toBeFalse();
+    expect(() => valid.guardAssert({ type: "bool", extra: 8 })).toThrow(
+      ".extra: 'extra' is not a valid property",
+    );
+    expect(() => valid.guardAssert({ type: "foo" })).toThrow(
+      ".type: 'foo' is not a valid discriminator value (int, bool, mixed)",
+    );
+    expect(() => valid.guardAssert({ type: true })).toThrow(
+      ".type: boolean is not a string",
+    );
+    expect(() => valid.guardAssert({})).toThrow(
+      ".: discriminator key 'type' is missing",
+    );
     expect(
       valid.schema() satisfies {
         discriminator: "type";
@@ -513,7 +570,7 @@ describe("native", () => {
             optionalProperties: { bool: { type: "boolean" } };
           };
         };
-      }
+      },
     ).toEqual({
       discriminator: "type",
       mapping: {
@@ -545,7 +602,7 @@ describe("native", () => {
       | { type: "bool"; value?: boolean }
       | { type: "mixed"; int: number; bool?: boolean }
       | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         discriminator: "type";
@@ -565,7 +622,7 @@ describe("native", () => {
           };
         };
         nullable: true;
-      }
+      },
     ).toEqual({
       discriminator: "type",
       mapping: {
@@ -594,13 +651,13 @@ describe("native", () => {
     assert(valid.guard(num));
     num satisfies number;
     void (0 as number satisfies typeof num);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(null)).toBeFalse();
     expect(
       valid.schema() satisfies {
         definitions: { num: { type: "int8" } };
         ref: "num";
-      }
+      },
     ).toEqual({
       definitions: { num: { type: "int8" } },
       ref: "num",
@@ -611,13 +668,13 @@ describe("native", () => {
     assert(vnull.guard(nul));
     nul satisfies number | null;
     void (null as number | null satisfies typeof nul);
-    expect(vnull.guard(vnull.fuzz()));
+    expect(vnull.guard(vnull.fuzz())).toBeTrue();
     expect(
       vnull.schema() satisfies {
         definitions: { num: { type: "int8" } };
         ref: "num";
         nullable: true;
-      }
+      },
     ).toEqual({
       definitions: { num: { type: "int8" } },
       ref: "num",
@@ -631,12 +688,12 @@ describe("native", () => {
     assert(inull.guard(inul));
     inul satisfies number | null;
     void (null as number | null satisfies typeof inul);
-    expect(inull.guard(inull.fuzz()));
+    expect(inull.guard(inull.fuzz())).toBeTrue();
     expect(
       inull.schema() satisfies {
         definitions: { num: { type: "int8"; nullable: true } };
         ref: "num";
-      }
+      },
     ).toEqual({
       definitions: { num: { type: "int8", nullable: true } },
       ref: "num",
@@ -647,7 +704,7 @@ describe("native", () => {
     const valid = metadata(empty(), "meta");
     // NOTE we run this 20 times to make sure we test all the various empty fuzzes
     for (let i = 0; i < 20; ++i) {
-      expect(valid.guard(valid.fuzz()));
+      expect(valid.guard(valid.fuzz())).toBeTrue();
     }
     expect(valid.schema() satisfies { metadata: "meta" }).toEqual({
       metadata: "meta",
@@ -663,10 +720,10 @@ describe("native", () => {
           int: properties({ value: int8() }, {}, true),
           opt: properties(
             {},
-            { value: boolean(), elems: elements(timestamp()) }
+            { value: boolean(), elems: elements(timestamp()) },
           ),
           props: properties({ values: values(int8()) }, { bool: double }),
-        })
+        }),
       );
 
     const val: unknown = { select: "props", values: { key: 0 } };
@@ -683,7 +740,13 @@ describe("native", () => {
           values: Record<string, number>;
           bool?: boolean;
         } satisfies typeof val);
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
+    expect(() =>
+      valid.guardAssert({
+        select: "props",
+        values: { "prop with spaces": true },
+      }),
+    ).toThrow('.values["prop with spaces"]: boolean is not a number');
   });
 });
 
@@ -1135,7 +1198,7 @@ describe("compile", () => {
     num satisfies Cycle;
     void ([] as Cycle satisfies typeof num);
     expect(valid.guard(5)).toBeFalse();
-    expect(valid.guard(valid.fuzz()));
+    expect(valid.guard(valid.fuzz())).toBeTrue();
   });
 
   test("works for complex type", () => {
@@ -1189,7 +1252,7 @@ describe("compile", () => {
 });
 
 const validTestStr = await Bun.file(
-  new URL("../json-typedef-spec/tests/validation.json", import.meta.url)
+  new URL("../json-typedef-spec/tests/validation.json", import.meta.url),
 ).text();
 describe("jtd validation tests", () => {
   const validTests = JSON.parse(validTestStr) as unknown;
@@ -1198,11 +1261,11 @@ describe("jtd validation tests", () => {
       schema: empty(),
       instance: empty(),
       errors: elements(empty()),
-    })
+    }),
   );
   assert(validator.guard(validTests));
   for (const [name, { schema, instance, errors }] of Object.entries(
-    validTests
+    validTests,
   )) {
     test(name, () => {
       // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error,@typescript-eslint/ban-ts-comment
@@ -1214,7 +1277,7 @@ describe("jtd validation tests", () => {
 });
 
 const invalidTestStr = await Bun.file(
-  new URL("../json-typedef-spec/tests/invalid_schemas.json", import.meta.url)
+  new URL("../json-typedef-spec/tests/invalid_schemas.json", import.meta.url),
 ).text();
 describe("jtd invalid schema tests", () => {
   const invalidTests = JSON.parse(invalidTestStr) as unknown;
