@@ -1,14 +1,14 @@
+import Ajv, { type SomeJTDSchemaType } from "ajv/dist/jtd";
+import { type Schema, validate } from "jtd";
+import { bench, group, run } from "mitata";
 import {
   compile,
+  elements,
+  empty,
+  properties,
   type SomeRootSchema,
   values,
-  properties,
-  empty,
-  elements,
 } from ".";
-import { run, bench, group } from "mitata";
-import { type Schema, validate } from "jtd";
-import Ajv, { type SomeJTDSchemaType } from "ajv/dist/jtd";
 
 const ajv = new Ajv();
 

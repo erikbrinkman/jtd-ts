@@ -6,7 +6,7 @@ export function isTimestamp(inp: string): boolean {
   const matches = timestampRegex.exec(inp);
   if (!matches) return false;
   const [, year, month, day, hour, minute, second] = matches.map((match) =>
-    parseInt(match),
+    parseInt(match, 10),
   );
   return (
     year !== undefined &&
