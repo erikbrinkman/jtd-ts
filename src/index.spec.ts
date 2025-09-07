@@ -1,24 +1,24 @@
+import { describe, expect, test } from "bun:test";
 import {
-  compile,
-  type SomeRootSchema,
-  empty,
-  nullable,
   boolean,
-  int8,
-  uint16,
-  enumeration,
-  values,
-  string,
-  definitions,
-  timestamp,
-  elements,
-  discriminator,
-  float64,
-  properties,
-  metadata,
   type CompiledSchema,
+  compile,
+  definitions,
+  discriminator,
+  elements,
+  empty,
+  enumeration,
+  float64,
+  int8,
+  metadata,
+  nullable,
+  properties,
+  type SomeRootSchema,
+  string,
+  timestamp,
+  uint16,
+  values,
 } from ".";
-import { test, expect, describe } from "bun:test";
 
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-redundant-type-constituents */
 
@@ -38,7 +38,6 @@ describe("native", () => {
     expect(valid.guard(valid.fuzz())).toBeTrue();
     expect(valid.guard(undefined)).toBeFalse();
     expect(() => valid.guardAssert(undefined)).toThrow(".: value is undefined");
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     expect(valid.schema() satisfies {}).toEqual({});
 
     const vnull = nullable(valid);
@@ -561,7 +560,6 @@ describe("native", () => {
             additionalProperties: true;
           };
           bool: {
-            // eslint-disable-next-line @typescript-eslint/no-empty-object-type
             properties: {};
             optionalProperties: { value: { type: "boolean" } };
           };
@@ -1268,7 +1266,7 @@ describe("jtd validation tests", () => {
     validTests,
   )) {
     test(name, () => {
-      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error,@typescript-eslint/ban-ts-comment
+      // biome-ignore lint/suspicious/noTsIgnore: necessary because ts has trouble with this
       // @ts-ignore can't actually infer type of SomeRootSchema
       const valid = compile(schema as SomeRootSchema);
       expect(valid.guard(instance)).toBe(!errors.length);

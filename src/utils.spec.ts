@@ -1,5 +1,5 @@
-import { isTimestamp, isRecord } from "./utils";
-import { describe, test, expect } from "bun:test";
+import { describe, expect, test } from "bun:test";
+import { isRecord, isTimestamp } from "./utils";
 
 const timestampTestCases: [string, boolean][] = [
   // From the RFC
