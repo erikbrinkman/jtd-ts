@@ -87,11 +87,11 @@
  * @packageDocumentation
  */
 
-import { intBounds, type IntType, isRecord, isTimestamp } from "./utils";
-import { gaussian, bernoulli, poisson, chars, choice, uniform } from "./random";
-import { concat, map, filter, range } from "./iter";
+import { concat, filter, map, range } from "./iter";
+import { bernoulli, chars, choice, gaussian, poisson, uniform } from "./random";
+import { type IntType, intBounds, isRecord, isTimestamp } from "./utils";
 
-export { type IntType };
+export type { IntType };
 
 /**
  * a compiled schema that allows various functions
@@ -329,7 +329,6 @@ export function metadata<const T, const S, const M>(
 
 class CompiledEmpty
   extends CompiledSchemaMixin<unknown>
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   implements CompiledSchema<unknown, {}>
 {
   *pathErrors(inp: unknown): Iterable<[string[], string]> {
@@ -357,14 +356,12 @@ class CompiledEmpty
     ])();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   schema(): {} {
     return {};
   }
 }
 
 /** a schema that accepts everything but undefined */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function empty(): CompiledSchema<unknown, {}> {
   return new CompiledEmpty();
 }
@@ -1710,7 +1707,6 @@ class DefinitionsBuilder<
  * schema.guard({ a: true, b: [false] });
  * schema.guard({ a: false });
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function definitions(): Definitions<{}> {
   return new DefinitionsBuilder({}, {});
 }
@@ -1908,66 +1904,64 @@ export type NullableData<S extends SomeSchema> = S["nullable"] extends true
 export type SchemaData<
   S extends SomeSchema,
   R extends Readonly<Record<string, SomeSchema>>,
-> =
-  // boolean type
-  S extends BooleanSchema
-    ? boolean | NullableData<S>
-    : // number types
-      S extends NumberSchema
-      ? number | NullableData<S>
-      : // string types
-        S extends StringSchema
-        ? string | NullableData<S>
-        : // enum types
-          S extends EnumSchema<infer V>
-          ? V[number] | NullableData<S>
-          : // elements types
-            S extends ElementsSchema<infer A>
-            ? SchemaData<A, R>[] | NullableData<S>
-            : // all three properties types
-              S extends BothPropertiesSchema<infer P, infer O>
+> = S extends BooleanSchema // boolean type
+  ? boolean | NullableData<S>
+  : // number types
+    S extends NumberSchema
+    ? number | NullableData<S>
+    : // string types
+      S extends StringSchema
+      ? string | NullableData<S>
+      : // enum types
+        S extends EnumSchema<infer V>
+        ? V[number] | NullableData<S>
+        : // elements types
+          S extends ElementsSchema<infer A>
+          ? SchemaData<A, R>[] | NullableData<S>
+          : // all three properties types
+            S extends BothPropertiesSchema<infer P, infer O>
+            ?
+                | {
+                    -readonly [K in keyof (Required<P> &
+                      Partial<O> &
+                      AdditionalProperties<S>)]: SchemaData<(P & O)[K], R>;
+                  }
+                | NullableData<S>
+            : S extends PropertiesSchema<infer P>
               ?
                   | {
                       -readonly [K in keyof (Required<P> &
-                        Partial<O> &
-                        AdditionalProperties<S>)]: SchemaData<(P & O)[K], R>;
+                        AdditionalProperties<S>)]: SchemaData<P[K], R>;
                     }
                   | NullableData<S>
-              : S extends PropertiesSchema<infer P>
+              : S extends OptionalPropertiesSchema<infer O>
                 ?
                     | {
-                        -readonly [K in keyof (Required<P> &
-                          AdditionalProperties<S>)]: SchemaData<P[K], R>;
+                        -readonly [K in keyof (Partial<O> &
+                          AdditionalProperties<S>)]: SchemaData<O[K], R>;
                       }
                     | NullableData<S>
-                : S extends OptionalPropertiesSchema<infer O>
-                  ?
-                      | {
-                          -readonly [K in keyof (Partial<O> &
-                            AdditionalProperties<S>)]: SchemaData<O[K], R>;
-                        }
-                      | NullableData<S>
-                  : // values type
-                    S extends ValuesSchema<infer V>
-                    ? Record<string, SchemaData<V, R>> | NullableData<S>
-                    : // ref type
-                      S extends RefSchema<infer D>
-                      ? D extends keyof R
-                        ? SchemaData<R[D], R> | NullableData<S>
-                        : never
-                      : // discriminator type
-                        S extends DiscriminatorSchema<infer D, infer M>
-                        ?
-                            | {
-                                [K in keyof M]: Record<D, K> &
-                                  SchemaData<M[K], R>;
-                              }[keyof M]
-                            // I'm not sure where an any is coming from, but it's not ideal
-                            // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-                            | NullableData<S>
-                        : // empty type
-                          // NOTE it's hard to actually type this better than unknown
-                          unknown;
+                : // values type
+                  S extends ValuesSchema<infer V>
+                  ? Record<string, SchemaData<V, R>> | NullableData<S>
+                  : // ref type
+                    S extends RefSchema<infer D>
+                    ? D extends keyof R
+                      ? SchemaData<R[D], R> | NullableData<S>
+                      : never
+                    : // discriminator type
+                      S extends DiscriminatorSchema<infer D, infer M>
+                      ?
+                          | {
+                              [K in keyof M]: Record<D, K> &
+                                SchemaData<M[K], R>;
+                            }[keyof M]
+                          // I'm not sure where an any is coming from, but it's not ideal
+                          // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+                          | NullableData<S>
+                      : // empty type
+                        // NOTE it's hard to actually type this better than unknown
+                        unknown;
 
 const typeValidators = {
   boolean,
@@ -2180,8 +2174,7 @@ export type RootSchemaData<S extends SomeRootSchema> = SchemaData<
   S,
   S["definitions"] extends Readonly<Record<string, SomeSchema>>
     ? S["definitions"]
-    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-      {}
+    : {}
 >;
 
 /**
