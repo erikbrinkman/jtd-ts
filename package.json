@@ -1,6 +1,20 @@
 {
   "name": "jtd-ts",
   "version": "0.2.1",
+  "description": "typescript first jtd validator",
+  "keywords": [
+    "jtd",
+    "json-typedef",
+    "json-validation",
+    "validation",
+    "typescript"
+  ],
+  "homepage": "https://erikbrinkman.github.io/jtd-ts/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikbrinkman/jtd-ts.git"
+  },
+  "license": "MIT",
   "type": "module",
   "module": "dist/index.min.js",
   "main": "dist/index.min.js",
