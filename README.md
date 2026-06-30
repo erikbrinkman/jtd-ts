@@ -7,6 +7,15 @@
 
 A fully compliant, typescript first jtd validator.
 
+> [!WARNING]
+> **Deprecated and unmaintained.** JTD ([RFC 8927](https://www.rfc-editor.org/rfc/rfc8927.html))
+> never advanced past "experimental" and its ecosystem is effectively dead. This package is
+> no longer maintained.
+>
+> - For general TypeScript-first runtime validation, use [`zod`](https://zod.dev/).
+> - If you specifically need JTD/RFC 8927 validation, use [`ajv`](https://ajv.js.org/json-type-definition.html),
+>   which remains the only maintained JTD validator.
+
 ## Overview
 
 When it comes to validating json, [JSON Schema](https://json-schema.org/) is by far the widest used, but often it's simpler cousin [JSON Type Definition (JTD)](https://jsontypedef.com/) is a better alternative.
